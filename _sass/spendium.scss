@@ -38,25 +38,34 @@
   --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg:        #0a0a0f;
-    --bg-elev:   #15151c;
-    --bg-soft:   #1c1c25;
-    --border:    rgba(255, 255, 255, 0.08);
-    --border-strong: rgba(255, 255, 255, 0.16);
-    --text:      #f1f5f9;
-    --text-muted:#cbd5e1;
-    --text-dim:  #94a3b8;
+// ---- Dark-theme palette ----------------------------------------------------
+// Defined once as a mixin so both the system-preference media query and an
+// explicit user override (`<html data-theme="dark">`) apply the same vars.
+@mixin dark-palette {
+  --bg:        #0a0a0f;
+  --bg-elev:   #15151c;
+  --bg-soft:   #1c1c25;
+  --border:    rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text:      #f1f5f9;
+  --text-muted:#cbd5e1;
+  --text-dim:  #94a3b8;
 
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
-    --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.55);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.55);
 
-    --brand-50:  #1c1b3a;
-    --brand-100: #25234c;
-  }
+  --brand-50:  #1c1b3a;
+  --brand-100: #25234c;
 }
+
+// System default — only applies when the user has NOT picked a theme.
+// data-theme="light" wins thanks to the :not() guard.
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { @include dark-palette; }
+}
+// Explicit override via the header toggle.
+:root[data-theme="dark"] { @include dark-palette; }
 
 * { box-sizing: border-box; }
 
@@ -104,8 +113,9 @@ a:hover { color: var(--brand-700); }
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 @media (prefers-color-scheme: dark) {
-  .site-nav { background: rgba(10, 10, 15, 0.72); }
+  :root:not([data-theme="light"]) .site-nav { background: rgba(10, 10, 15, 0.72); }
 }
+:root[data-theme="dark"] .site-nav { background: rgba(10, 10, 15, 0.72); }
 .site-nav.scrolled {
   border-bottom-color: var(--border);
   box-shadow: var(--shadow-sm);
@@ -163,6 +173,49 @@ a:hover { color: var(--brand-700); }
   transform: translateY(-1px);
   box-shadow: 0 10px 24px rgba(99, 102, 241, 0.45);
 }
+
+/* Theme toggle button (system / light / dark) */
+.theme-toggle {
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px 0 12px;
+  margin: 0 2px 0 4px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text-muted);
+  font: 500 14px/1 var(--font-sans);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.theme-toggle:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+  background: var(--bg-soft);
+  transform: translateY(-1px);
+}
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+}
+.theme-toggle svg { width: 16px; height: 16px; display: block; flex: 0 0 auto; }
+.theme-toggle .theme-label { display: inline; white-space: nowrap; }
+/* Only the icon matching the active mode is shown. */
+.theme-toggle .icon-system,
+.theme-toggle .icon-light,
+.theme-toggle .icon-dark { display: none; }
+.theme-toggle[data-mode="system"] .icon-system { display: block; }
+.theme-toggle[data-mode="light"]  .icon-light  { display: block; }
+.theme-toggle[data-mode="dark"]   .icon-dark   { display: block; }
+/* Narrow viewports: collapse to icon-only to keep the nav tidy. */
+@media (max-width: 520px) {
+  .theme-toggle { width: 38px; padding: 0; justify-content: center; }
+  .theme-toggle .theme-label { display: none; }
+}
+
 @media (max-width: 720px) {
   .nav-links a:not(.nav-cta) { display: none; }
 }

@@ -22,6 +22,19 @@
   <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
 
   {%- include head-custom.html -%}
+
+  <script>
+    // Apply the saved theme BEFORE first paint to avoid a flash.
+    // Stored value is one of: 'system' (default), 'light', 'dark'.
+    (function () {
+      try {
+        var t = localStorage.getItem('spendium-theme');
+        if (t === 'light' || t === 'dark') {
+          document.documentElement.setAttribute('data-theme', t);
+        }
+      } catch (e) { /* localStorage blocked — fall back to system */ }
+    })();
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -36,6 +49,13 @@
         <a href="{{ '/' | relative_url }}#features">Features</a>
         <a href="{{ '/' | relative_url }}#screenshots">Screenshots</a>
         <a href="{{ '/privacy/' | relative_url }}">Privacy</a>
+        <button id="theme-toggle" class="theme-toggle" type="button" data-mode="system"
+                aria-label="Theme: system (click to change)" title="Theme: follow system">
+          <svg class="icon-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <svg class="icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"/></svg>
+          <svg class="icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <span class="theme-label" aria-hidden="true">System</span>
+        </button>
         <a class="nav-cta" href="https://play.google.com/store/apps/details?id=com.vshpynta.spendium">
           Google Play
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
@@ -97,6 +117,40 @@
       };
       setShadow();
       window.addEventListener('scroll', setShadow, { passive: true });
+
+      // Theme toggle: system -> light -> dark -> system
+      var THEME_KEY = 'spendium-theme';
+      var MODES = ['system', 'light', 'dark'];
+      var LABEL = { system: 'Theme: system (click for light)',
+                    light:  'Theme: light (click for dark)',
+                    dark:   'Theme: dark (click to follow system)' };
+      var TEXT  = { system: 'System', light: 'Light', dark: 'Dark' };
+      var toggle = document.getElementById('theme-toggle');
+      var labelEl = toggle ? toggle.querySelector('.theme-label') : null;
+      function applyTheme(mode) {
+        if (mode === 'system') document.documentElement.removeAttribute('data-theme');
+        else document.documentElement.setAttribute('data-theme', mode);
+        if (toggle) {
+          toggle.setAttribute('data-mode', mode);
+          toggle.setAttribute('aria-label', LABEL[mode]);
+          toggle.setAttribute('title', LABEL[mode]);
+          if (labelEl) labelEl.textContent = TEXT[mode];
+        }
+      }
+      var initial = 'system';
+      try {
+        var stored = localStorage.getItem(THEME_KEY);
+        if (stored === 'light' || stored === 'dark') initial = stored;
+      } catch (e) {}
+      applyTheme(initial);
+      if (toggle) {
+        toggle.addEventListener('click', function () {
+          var current = toggle.getAttribute('data-mode') || 'system';
+          var next = MODES[(MODES.indexOf(current) + 1) % MODES.length];
+          try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+          applyTheme(next);
+        });
+      }
 
       // Lightbox
       var overlay = document.getElementById('lightbox-overlay');
