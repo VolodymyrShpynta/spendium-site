@@ -1,0 +1,25 @@
+# Use the official GitHub Pages image — same gem set GH Pages uses,
+# so what renders locally matches what will ship.
+# Run with:  docker compose up
+# Visit:     http://localhost:4000
+services:
+  site:
+    image: jekyll/jekyll:pages
+    container_name: spendium-site
+    # The :pages image ships Ruby 3.x but doesn't bundle `webrick`
+    # (removed from Ruby stdlib in 3.0), so `jekyll serve` can't start
+    # the dev server until we install it once. `gem install` is cached
+    # in the named volume below, so subsequent runs are instant.
+    command: >
+      sh -c "gem list -i webrick > /dev/null 2>&1 || gem install webrick --no-document &&
+             jekyll serve --host 0.0.0.0 --watch --force_polling --incremental"
+    ports:
+      - "4000:4000"
+    volumes:
+      - .:/srv/jekyll
+      # Persist installed gems (incl. webrick) between runs so startup
+      # after the first `docker compose up` is a few seconds, not a minute.
+      - gem-cache:/usr/gem
+
+volumes:
+  gem-cache:

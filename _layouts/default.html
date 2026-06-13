@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="{{ site.lang | default: 'en' }}">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  {%- assign page_title = page.title | default: site.title -%}
+  {%- assign page_desc  = page.description | default: site.description -%}
+  <title>{% if page.title and page.title != site.title %}{{ page.title }} &middot; {{ site.title }}{% else %}{{ site.title }} &middot; Private expense tracker for Android{% endif %}</title>
+  <meta name="description" content="{{ page_desc | strip_newlines }}">
+  <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+
+  <meta property="og:title" content="{{ page_title }}">
+  <meta property="og:description" content="{{ page_desc | strip_newlines }}">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="{{ '/assets/icon.svg' | relative_url }}">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+
+  {%- include head-custom.html -%}
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-nav" role="banner">
+    <div class="nav-inner">
+      <a class="brand" href="{{ '/' | relative_url }}" aria-label="Spendium home">
+        <img src="{{ '/assets/icon.svg' | relative_url }}" alt="" width="32" height="32" />
+        <span>Spendium</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="{{ '/' | relative_url }}#features">Features</a>
+        <a href="{{ '/' | relative_url }}#screenshots">Screenshots</a>
+        <a href="{{ '/privacy/' | relative_url }}">Privacy</a>
+        <a class="nav-cta" href="https://play.google.com/store/apps/details?id=com.vshpynta.spendium">
+          Google Play
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="{% if page.url == '/' %}page-home{% else %}page-doc{% endif %}">
+    {{ content }}
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="{{ '/assets/icon.svg' | relative_url }}" alt="" width="40" height="40" />
+        <div>
+          <strong>Spendium</strong>
+          <p>Private, offline-first expense tracker for Android.</p>
+        </div>
+      </div>
+      <div class="footer-cols">
+        <div>
+          <h4>Product</h4>
+          <ul>
+            <li><a href="{{ '/' | relative_url }}#features">Features</a></li>
+            <li><a href="{{ '/' | relative_url }}#screenshots">Screenshots</a></li>
+            <li><a href="https://play.google.com/store/apps/details?id=com.vshpynta.spendium">Google Play</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Project</h4>
+          <ul>
+            <li><a href="https://github.com/VolodymyrShpynta/expenses-tracker-playground/tree/main/expenses-tracker-mobile">Source on GitHub</a></li>
+            <li><a href="{{ '/privacy/' | relative_url }}">Privacy Policy</a></li>
+            <li><a href="mailto:volodymyr.shpynta.n@gmail.com">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <span>&copy; {{ 'now' | date: '%Y' }} Volodymyr Shpynta</span>
+      <span>Built with Jekyll on GitHub Pages</span>
+    </div>
+  </footer>
+
+  <div id="lightbox-overlay" role="dialog" aria-modal="true" aria-label="Screenshot preview" hidden>
+    <button id="lightbox-close" aria-label="Close preview">&times;</button>
+    <img id="lightbox-image" src="" alt="" />
+  </div>
+
+  <script>
+    (function () {
+      // Nav shadow on scroll
+      var nav = document.querySelector('.site-nav');
+      var setShadow = function () {
+        if (window.scrollY > 8) nav.classList.add('scrolled');
+        else nav.classList.remove('scrolled');
+      };
+      setShadow();
+      window.addEventListener('scroll', setShadow, { passive: true });
+
+      // Lightbox
+      var overlay = document.getElementById('lightbox-overlay');
+      var image   = document.getElementById('lightbox-image');
+      var closeBtn = document.getElementById('lightbox-close');
+      if (!overlay) return;
+
+      function open(src, alt) {
+        image.src = src;
+        image.alt = alt || '';
+        overlay.hidden = false;
+        overlay.classList.add('visible');
+        document.body.style.overflow = 'hidden';
+      }
+      function close() {
+        overlay.classList.remove('visible');
+        overlay.hidden = true;
+        image.src = '';
+        document.body.style.overflow = '';
+      }
+      document.querySelectorAll('a.zoom').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          var img = a.querySelector('img');
+          open(a.getAttribute('href'), img ? img.alt : '');
+        });
+      });
+      overlay.addEventListener('click', close);
+      closeBtn.addEventListener('click', function (e) { e.stopPropagation(); close(); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && overlay.classList.contains('visible')) close();
+      });
+    })();
+  </script>
+</body>
+</html>

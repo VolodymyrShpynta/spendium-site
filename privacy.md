@@ -6,7 +6,7 @@ permalink: /privacy/
 
 # Privacy Policy
 
-_Last updated: 11 June 2026_
+<p class="doc-updated">Last updated: 11 June 2026</p>
 
 This Privacy Policy describes how the **Spendium** mobile application
 ("Spendium", "the app", "we") handles your information.
