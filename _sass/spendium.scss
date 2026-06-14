@@ -166,8 +166,11 @@ a:hover { color: var(--brand-700); }
   align-items: center;
   gap: 6px;
   font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
   box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
 }
+.nav-links a.nav-cta .icon-play { display: none; }
 .nav-links a.nav-cta:hover {
   color: #fff;
   transform: translateY(-1px);
@@ -211,13 +214,27 @@ a:hover { color: var(--brand-700); }
 .theme-toggle[data-mode="light"]  .icon-light  { display: block; }
 .theme-toggle[data-mode="dark"]   .icon-dark   { display: block; }
 /* Narrow viewports: collapse to icon-only to keep the nav tidy. */
-@media (max-width: 520px) {
+@media (max-width: 410px) {
   .theme-toggle { width: 38px; padding: 0; justify-content: center; }
   .theme-toggle .theme-label { display: none; }
 }
 
 @media (max-width: 720px) {
   .nav-links a:not(.nav-cta) { display: none; }
+}
+
+/* Narrow viewports: collapse the CTA to an icon-only pill, matching the theme toggle. */
+@media (max-width: 410px) {
+  .nav-links a.nav-cta {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+  }
+  .nav-links a.nav-cta .cta-label,
+  .nav-links a.nav-cta .icon-ext { display: none; }
+  .nav-links a.nav-cta .icon-play { display: block; }
 }
 
 /* ---------- Main wrapper ---------- */
