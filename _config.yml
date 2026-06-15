@@ -2,12 +2,18 @@ title: Spendium
 description: >-
   Private expense tracker with Google Drive & OneDrive sync.
   Your data stays on your device and in your own cloud.
+url: "https://spendium.net"
 lang: en
 show_downloads: false
 
 # We ship a fully custom layout in _layouts/default.html and SCSS in
 # assets/css/main.scss, so no Jekyll theme is needed. GitHub Pages still
 # builds the site (kramdown + sass-converter) without one.
+
+# GitHub Pages safe-listed plugins.
+# jekyll-sitemap → generates /sitemap.xml from site.url + every page.
+plugins:
+  - jekyll-sitemap
 
 # Friendlier markdown rendering (smart quotes, footnotes, etc.).
 markdown: kramdown
