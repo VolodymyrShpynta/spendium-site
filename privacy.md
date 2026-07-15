@@ -76,8 +76,8 @@ explicitly use the corresponding feature:
 
 | Service | When it is contacted | What is sent |
 |---|---|---|
-| Google OAuth / Drive API | Only after you tap "Sign in to Google Drive" in Cloud sync | OAuth credentials and your encrypted sync file |
-| Microsoft OAuth / Microsoft Graph | Only after you tap "Sign in to OneDrive" in Cloud sync | OAuth credentials and your encrypted sync file |
+| Google OAuth / Drive API | Only after you tap "Sign in to Google Drive" in Cloud sync | OAuth credentials and your compressed sync file |
+| Microsoft OAuth / Microsoft Graph | Only after you tap "Sign in to OneDrive" in Cloud sync | OAuth credentials and your compressed sync file |
 | [frankfurter.dev](https://frankfurter.dev) | Periodically, only if you record expenses in a currency other than your default currency | A request for **publicly-available historical exchange rates** — no user identifier is sent |
 
 Spendium does **not** contact any other server.
@@ -95,9 +95,11 @@ None. Spendium does not share, sell, or rent your data to anyone.
 
 ## Children's privacy
 
-Spendium is a general-purpose expense tracker and is not directed at
-children under 16. We do not knowingly collect personal information from
-children under 16.
+Spendium does not collect personal information from anyone, of any age.
+Everything you record stays on your device, so there is no personal data
+for us to collect — whether the user is an adult or a child. The app is a
+general-purpose expense tracker and is not specifically directed at
+children.
 
 ## Data retention and deletion
 

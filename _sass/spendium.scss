@@ -243,6 +243,9 @@ main.page-doc {
   max-width: 820px;
   margin: 0 auto;
   padding: 56px 24px 96px;
+  /* Long, space-less tokens (OAuth scope URLs, permission links) must wrap
+     instead of forcing the whole page to scroll sideways on phones. */
+  overflow-wrap: break-word;
 }
 
 /* ---------- Hero ---------- */
@@ -623,6 +626,9 @@ main.page-doc {
   border-radius: 6px;
   font-size: 0.92em;
   color: var(--text);
+  /* Long scope URLs (e.g. the Google Drive appdata scope) break mid-token on
+     narrow screens rather than overflowing the viewport. */
+  overflow-wrap: anywhere;
 }
 .page-doc table {
   width: 100%;
@@ -649,6 +655,21 @@ main.page-doc {
 }
 .page-doc a { color: var(--brand-600); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
 .page-doc a:hover { color: var(--brand-700); }
+
+/* Mobile refinements so the policy reads cleanly on phones — parity with the
+   responsive landing page. */
+@media (max-width: 640px) {
+  main.page-doc { padding: 40px 18px 72px; }
+  .page-doc h2 { margin-top: 32px; }
+  /* Keep the 3-column "third-party services" table inside the viewport by
+     shrinking it slightly and letting long cell tokens break so the table's
+     intrinsic min-width collapses to fit narrow screens (break-word alone
+     does not reduce a cell's min-content width; `anywhere` does).
+     `table-layout: fixed` gives the columns equal thirds so the first column
+     is wide enough for whole words instead of being squeezed. */
+  .page-doc table { font-size: 14px; table-layout: fixed; }
+  .page-doc th, .page-doc td { padding: 9px 10px; overflow-wrap: anywhere; }
+}
 
 /* ---------- Footer ---------- */
 .site-footer {
