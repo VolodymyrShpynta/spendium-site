@@ -256,20 +256,32 @@ main.page-doc {
   text-align: center;
   isolation: isolate;
 }
+// One wash instead of overlapping blobs: summing two gradients makes their
+// slope breaks reinforce into visible ridges/valleys. Sized far larger than the
+// hero (r stays under ~0.9 at every corner) so the ellipse edge is never on
+// screen and only the smooth interior of the ramp shows.
 .hero::before {
   content: "";
   position: absolute; inset: 0;
   background:
-    radial-gradient(60% 50% at 15% 10%, rgba(99, 102, 241, 0.20), transparent 60%),
-    radial-gradient(50% 45% at 85% 20%, rgba(34, 197, 94, 0.16), transparent 65%),
-    radial-gradient(70% 60% at 50% 100%, rgba(168, 85, 247, 0.15), transparent 65%);
+    radial-gradient(180% 140% at 50% -20%,
+      rgba(99, 102, 241, 0.13) 0%,
+      rgba(105, 99, 242, 0.098) 22%,
+      rgba(122, 94, 244, 0.062) 44%,
+      rgba(146, 89, 246, 0.032) 66%,
+      rgba(168, 85, 247, 0.012) 100%);
   z-index: -1;
 }
 .hero::after {
   content: "";
   position: absolute; left: 0; right: 0; bottom: -1px;
-  height: 80px;
+  height: 180px;
   background: linear-gradient(to bottom, transparent, var(--bg));
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--bg) 35%, transparent) 45%,
+    color-mix(in srgb, var(--bg) 78%, transparent) 75%,
+    var(--bg) 100%);
   z-index: -1;
 }
 .hero-icon {
@@ -510,26 +522,16 @@ main.page-doc {
 }
 
 /* ---------- Screenshots ---------- */
-.shot-group { margin-bottom: 56px; }
-.shot-group:last-child { margin-bottom: 0; }
-.shot-group h3 {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  margin: 0 0 24px;
-  color: var(--text);
-}
 .shot-grid {
   display: grid;
   gap: 24px;
-  grid-template-columns: repeat(3, 1fr);
-}
-.shot-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
-@media (max-width: 960px) {
-  .shot-grid, .shot-grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
 }
 @media (max-width: 560px) {
-  .shot-grid, .shot-grid.cols-4 { grid-template-columns: 1fr; }
+  .shot-grid {
+    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
 }
 .shot {
   display: flex;
@@ -551,9 +553,9 @@ main.page-doc {
 }
 .shot a.zoom img {
   width: 100%;
+  height: auto;
   display: block;
-  aspect-ratio: 9 / 19.5;
-  object-fit: cover;
+  aspect-ratio: 9 / 20;
   cursor: zoom-in;
 }
 .shot .caption {
