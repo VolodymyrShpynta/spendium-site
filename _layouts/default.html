@@ -13,6 +13,8 @@
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
 
   <meta property="og:title" content="{{ page_title }}">
+  <meta property="og:site_name" content="{{ site.title | escape }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
   <meta property="og:description" content="{{ page_desc | strip_newlines }}">
   <meta property="og:type" content="website">
   <meta property="og:image" content="{{ '/assets/icon.svg' | relative_url }}">
@@ -20,6 +22,18 @@
 
   <link rel="canonical" href="{{ page.url | absolute_url }}">
   <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+
+  {% if page.url == '/' %}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": {{ site.title | jsonify }},
+      "alternateName": "spendium.net",
+      "url": {{ '/' | absolute_url | jsonify }}
+    }
+  </script>
+  {% endif %}
 
   {%- include head-custom.html -%}
 

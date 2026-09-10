@@ -1,8 +1,9 @@
 title: Spendium
 description: >-
-  Private expense tracker with Google Drive & OneDrive sync.
-  Your data stays on your device and in your own cloud.
+  Spendium is a private, offline-first expense tracker for Android.
+  Sync with your own Google Drive or OneDrive. No ads, tracking, or account required.
 url: "https://spendium.net"
+baseurl: ""
 lang: en
 show_downloads: false
 

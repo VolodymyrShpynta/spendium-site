@@ -1,7 +1,8 @@
-# spendium-site
+# Spendium
 
-Source for the **Spendium** marketing landing page and privacy policy,
-published via GitHub Pages.
+[Spendium](https://spendium.net/) is a private, offline-first expense tracker
+for Android with optional Google Drive or OneDrive sync. This repository contains
+its official website and privacy policy, published via GitHub Pages.
 
 - Landing page source: [`index.html`](./index.html) &mdash; served at `/`
 - Privacy policy source: [`privacy.md`](./privacy.md) &mdash; served at `/privacy/`
@@ -10,6 +11,8 @@ published via GitHub Pages.
 
 The companion Android app (Spendium) is published on Google Play as
 [`com.vshpynta.spendium`](https://play.google.com/store/apps/details?id=com.vshpynta.spendium).
+The [Spendium app source](https://github.com/VolodymyrShpynta/expenses-tracker-playground/tree/main/expenses-tracker-mobile)
+is maintained in a separate repository.
 
 ## Stack
 
@@ -37,8 +40,49 @@ The companion Android app (Spendium) is published on Google Play as
 1. Push to `main`.
 2. GitHub → **Settings → Pages** → *Source: Deploy from a branch* →
    `main` / `(root)`.
-3. Wait ~30 seconds for the first build, then visit
-   `https://<your-user>.github.io/spendium-site/`.
+3. Keep the custom domain set to `spendium.net` and **Enforce HTTPS** enabled.
+4. Wait for the GitHub Pages deployment to succeed, then visit
+   <https://spendium.net/>.
+
+## Search identity
+
+Use **Spendium** consistently as the brand and <https://spendium.net/> as the
+official website. The homepage introduces the app by name, uses the shared
+description from [_config.yml](_config.yml), and declares its preferred site name
+through Open Graph metadata and homepage-only `WebSite` structured data in
+[_layouts/default.html](_layouts/default.html).
+
+### Public listings and profiles
+
+These updates belong to the other repository or account settings; publishing
+this website does not update them:
+
+- **Google Play:** retain the Spendium brand in the app title and description.
+  Verify the app's website/contact link is <https://spendium.net/> and its privacy
+  policy link is <https://spendium.net/privacy/>.
+- **App repository:** use `Spendium - Mobile App (Expo / React Native)` as the
+  mobile README heading, and link the Spendium name to <https://spendium.net/>
+  near its opening description. Include the same link in the root README's
+  mobile-app section and the repository's About website field where appropriate.
+- **Public profiles:** describe Spendium consistently and link to
+  <https://spendium.net/> on relevant developer and project profiles.
+
+### After publishing
+
+1. Inspect <https://spendium.net/> in the `spendium.net` Search Console property.
+   Test the live URL and verify that crawling and indexing are allowed.
+2. Validate the homepage's `WebSite` JSON-LD with the
+   [Schema Markup Validator](https://validator.schema.org/). Google's Rich Results
+   Test does not validate site-name markup.
+3. Confirm <https://spendium.net/sitemap.xml> is submitted successfully. Request
+   indexing of the updated homepage once; repeated requests do not speed it up.
+4. Monitor **Performance > Queries** for searches containing `spendium`, rather
+   than using the overall average position as the brand's ranking.
+
+Keep intentional HTTP, `www`, and GitHub Pages redirects to the canonical site.
+The Google ownership-verification file must remain accessible but does not need
+to appear in search results. Clear branding helps describe the site; neither
+metadata nor a recrawl request guarantees rankings or prevents spelling corrections.
 
 ## Local preview
 
