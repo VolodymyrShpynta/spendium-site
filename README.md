@@ -19,7 +19,7 @@ is maintained in a separate repository.
 - GitHub Pages (Jekyll, server-side build — no local toolchain needed).
 - Custom layout + SCSS (no theme gem). Sass is compiled by `jekyll-sass-converter`,
   which is part of Jekyll core on GitHub Pages.
-- Inter typeface from Google Fonts.
+- DM Sans and Sora typefaces from Google Fonts.
 - No Gemfile, no Ruby, no plugins beyond what GitHub Pages ships.
 
 ## Files

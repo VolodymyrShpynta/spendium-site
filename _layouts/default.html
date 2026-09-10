@@ -10,7 +10,7 @@
   <title>{% if page.title and page.title != site.title %}{{ page.title }} &middot; {{ site.title }}{% else %}{{ site.title }} &middot; Private expense tracker for Android{% endif %}</title>
   <meta name="description" content="{{ page_desc | strip_newlines }}">
   <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#0a0a0f" media="(prefers-color-scheme: dark)">
 
   <meta property="og:title" content="{{ page_title }}">
   <meta property="og:site_name" content="{{ site.title | escape }}">
@@ -117,10 +117,28 @@
     </div>
   </footer>
 
-  <div id="lightbox-overlay" role="dialog" aria-modal="true" aria-label="Screenshot preview" hidden>
-    <button id="lightbox-close" aria-label="Close preview">&times;</button>
-    <img id="lightbox-image" src="" alt="" />
-  </div>
+  <dialog id="lightbox-overlay" aria-label="Screenshot preview">
+    <div class="lightbox-toolbar">
+      <div class="lightbox-zoom" role="group" aria-label="Image zoom">
+        <button id="lightbox-zoom-out" type="button" aria-label="Zoom out" title="Zoom out" disabled>
+          <svg class="lucide lucide-zoom-out" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3M8 11h6"/></svg>
+        </button>
+        <output id="lightbox-zoom-level" aria-live="polite" aria-label="Zoom relative to fitted size">100%</output>
+        <button id="lightbox-zoom-in" type="button" aria-label="Zoom in" title="Zoom in" disabled>
+          <svg class="lucide lucide-zoom-in" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3M11 8v6M8 11h6"/></svg>
+        </button>
+        <button id="lightbox-zoom-reset" type="button" aria-label="Fit image" title="Fit image" disabled>
+          <svg class="lucide lucide-maximize" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3"/></svg>
+        </button>
+      </div>
+      <button id="lightbox-close" type="button" aria-label="Close preview" title="Close preview" autofocus>&times;</button>
+    </div>
+    <div id="lightbox-viewport" tabindex="0" role="region" aria-label="Screenshot image">
+      <div id="lightbox-stage">
+        <img id="lightbox-image" alt="" draggable="false" hidden />
+      </div>
+    </div>
+  </dialog>
 
   <script>
     (function () {
@@ -171,32 +189,98 @@
       var overlay = document.getElementById('lightbox-overlay');
       var image   = document.getElementById('lightbox-image');
       var closeBtn = document.getElementById('lightbox-close');
+      var viewport = document.getElementById('lightbox-viewport');
+      var stage = document.getElementById('lightbox-stage');
+      var zoomIn = document.getElementById('lightbox-zoom-in');
+      var zoomOut = document.getElementById('lightbox-zoom-out');
+      var zoomReset = document.getElementById('lightbox-zoom-reset');
+      var zoomLevel = document.getElementById('lightbox-zoom-level');
       if (!overlay) return;
 
+      var zoom = 1;
+      var fittedWidth = 0;
+      var MIN_ZOOM = 0.5;
+      var MAX_ZOOM = 4;
+      var ZOOM_STEP = 0.25;
+
+      function updateZoomControls() {
+        zoomLevel.value = Math.round(zoom * 100) + '%';
+        zoomOut.disabled = !fittedWidth || zoom <= MIN_ZOOM;
+        zoomIn.disabled = !fittedWidth || zoom >= MAX_ZOOM;
+        zoomReset.disabled = !fittedWidth || zoom === 1;
+      }
+      function resizeImage(preserveCenter) {
+        var viewportBounds = viewport.getBoundingClientRect();
+        var centerX = viewportBounds.left + viewport.clientLeft + viewport.clientWidth / 2;
+        var centerY = viewportBounds.top + viewport.clientTop + viewport.clientHeight / 2;
+        var previousBounds = image.getBoundingClientRect();
+        var imageCenterX = preserveCenter && previousBounds.width ? (centerX - previousBounds.left) / previousBounds.width : 0.5;
+        var imageCenterY = preserveCenter && previousBounds.height ? (centerY - previousBounds.top) / previousBounds.height : 0.5;
+
+        image.style.width = fittedWidth * zoom + 'px';
+        image.style.height = fittedWidth * zoom * image.naturalHeight / image.naturalWidth + 'px';
+        image.hidden = false;
+
+        var currentBounds = image.getBoundingClientRect();
+        viewport.scrollLeft += currentBounds.left + imageCenterX * currentBounds.width - centerX;
+        viewport.scrollTop += currentBounds.top + imageCenterY * currentBounds.height - centerY;
+        updateZoomControls();
+      }
+      function fitImage() {
+        if (!overlay.open || !image.naturalWidth || !image.naturalHeight) return;
+        fittedWidth = Math.min(
+          image.naturalWidth,
+          Math.max(1, viewport.clientWidth - 32),
+          Math.max(1, viewport.clientHeight - 32) * image.naturalWidth / image.naturalHeight
+        );
+        resizeImage(!image.hidden);
+      }
+      function setZoom(nextZoom) {
+        if (!fittedWidth) return;
+        zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, nextZoom));
+        resizeImage(true);
+      }
       function open(src, alt) {
-        image.src = src;
+        zoom = 1;
+        fittedWidth = 0;
+        image.hidden = true;
         image.alt = alt || '';
-        overlay.hidden = false;
-        overlay.classList.add('visible');
+        updateZoomControls();
         document.body.style.overflow = 'hidden';
+        overlay.showModal();
+        image.src = src;
+        if (image.complete) fitImage();
       }
       function close() {
-        overlay.classList.remove('visible');
-        overlay.hidden = true;
-        image.src = '';
-        document.body.style.overflow = '';
+        overlay.close();
       }
-      document.querySelectorAll('a.zoom').forEach(function (a) {
-        a.addEventListener('click', function (e) {
-          e.preventDefault();
-          var img = a.querySelector('img');
-          open(a.getAttribute('href'), img ? img.alt : '');
+      document.querySelectorAll('a.zoom').forEach(function (link) {
+        link.addEventListener('click', function (event) {
+          event.preventDefault();
+          var preview = link.querySelector('img');
+          open(link.getAttribute('href'), preview ? preview.alt : '');
         });
       });
-      overlay.addEventListener('click', close);
-      closeBtn.addEventListener('click', function (e) { e.stopPropagation(); close(); });
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && overlay.classList.contains('visible')) close();
+      image.addEventListener('load', fitImage);
+      new ResizeObserver(fitImage).observe(viewport);
+      zoomIn.addEventListener('click', function () { setZoom(zoom + ZOOM_STEP); });
+      zoomOut.addEventListener('click', function () { setZoom(zoom - ZOOM_STEP); });
+      zoomReset.addEventListener('click', function () { setZoom(1); });
+      overlay.addEventListener('click', function (event) {
+        if (event.target === overlay || event.target === stage) close();
+      });
+      closeBtn.addEventListener('click', close);
+      overlay.addEventListener('close', function () {
+        image.hidden = true;
+        image.removeAttribute('src');
+        image.style.removeProperty('width');
+        image.style.removeProperty('height');
+        viewport.scrollLeft = 0;
+        viewport.scrollTop = 0;
+        fittedWidth = 0;
+        zoom = 1;
+        updateZoomControls();
+        document.body.style.overflow = '';
       });
     })();
   </script>
